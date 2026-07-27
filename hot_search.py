@@ -46,7 +46,13 @@ def extract_keywords(title):
     for seg in segments:
         if seg.lower() in STOP_WORDS or seg in STOP_WORDS:
             continue
-        if len(seg) >= 2:
+        # 过滤纯数字
+            if seg.isdigit():
+                continue
+            # 英文/数字混合至少3字符，中文至少2字符
+            if seg.isascii() and len(seg) < 3:
+                continue
+            if len(seg) >= 2:
             keywords.add(seg)
     return keywords
 
@@ -372,3 +378,5 @@ def main():
 
 if __name__ == '__main__':
     main()
+
+
