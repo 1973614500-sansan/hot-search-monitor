@@ -1,9 +1,9 @@
-ï»¿name: Hot Search Monitor
+name: Hot Search Monitor
 
 on:
   schedule:
-    - cron: '0 */2 * * *'  # æ¯2å°æ—¶æ‰§è¡Œ
-  workflow_dispatch:  # æ”¯æŒæ‰‹åŠ¨è§¦å‘
+    - cron: '0 * * * *'  # Ã¿Ğ¡Ê±Ö´ĞĞ
+  workflow_dispatch:  # Ö§³ÖÊÖ¶¯´¥·¢
   repository_dispatch:
     types: [hot-search-trigger]
 
