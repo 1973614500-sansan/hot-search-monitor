@@ -314,7 +314,7 @@ def send_wecom(content):
 
     payload = {
         "msgtype": "text",
-        "text": {"content": content}
+        "text": {"content": content, "mentioned_list": ["liyijie01", "hujianing"]}
     }
     try:
         resp = requests.post(webhook_url, json=payload, timeout=10)
@@ -378,6 +378,7 @@ def main():
 
 if __name__ == '__main__':
     main()
+
 
 
 
