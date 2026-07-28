@@ -53,7 +53,7 @@ def extract_keywords(title):
             if seg.isascii() and len(seg) < 3:
                 continue
             if len(seg) >= 2:
-            keywords.add(seg)
+                keywords.add(seg)
     return keywords
 
 
@@ -378,5 +378,6 @@ def main():
 
 if __name__ == '__main__':
     main()
+
 
 
