@@ -135,7 +135,7 @@ def fetch_bilibili():
         results = []
         for i, item in enumerate(trending[:10]):
             title = item.get('keyword', item.get('show_name', ''))
-            hot = item.get('heat_score', item.get('hot_id', 0))
+            hot = 0  # B站接口不提供真实热度值
             results.append({'rank': i + 1, 'title': title, 'hot': hot})
         return results
     except Exception as e:
