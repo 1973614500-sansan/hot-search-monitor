@@ -164,7 +164,7 @@ def fetch_kuaishou():
     except Exception as e:
         print(f"  [快手] 主接口失败: {e}")
     try:
-        url = 'https://tenapi.cn/v2/kuaishouhot'
+        url = 'https://api.vvhan.com/api/hotlist/kuaiShou'
         resp = requests.get(url, timeout=TIMEOUT)
         data = resp.json()
         items = data.get('data', [])
@@ -255,8 +255,8 @@ def send_wecom(content):
     payload = {
         "msgtype": "text",
         "text": {
-            "content": content + "\n\n@李圈圈 @福三三",
-            "mentioned_list": ["liyijie01", "hujianing"]
+            "content": content,
+            "mentioned_list": ["liyijie01", "hujianing", "@all"]
         }
     }
     try:
