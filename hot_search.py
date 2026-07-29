@@ -144,38 +144,74 @@ def fetch_bilibili():
 
 
 def fetch_kuaishou():
+    apis = [
+        ('https://www.kuaishou.com/graphql', 'graphql'),
+        ('https://api.vvhan.com/api/hotlist/kuaiShou', 'vvhan'),
+        ('https://tenapi.cn/v2/kuaishouhot', 'tenapi'),
+        ('https://api.oioweb.cn/api/common/HotList?type=kuaishou', 'oioweb'),
+    ]
+    # Try GraphQL first
     try:
-        api_url = 'https://www.kuaishou.com/graphql'
-        payload = {
-            "operationName": "visionHotRank",
-            "variables": {"page": "home"},
-            "query": "query visionHotRank($page: String) { visionHotRank(page: $page) { items { name hotValue iconUrl } } }"
-        }
+        payload = {"operationName": "visionHotRank", "variables": {"page": "home"}}
+        payload["query"] = "query visionHotRank(" + chr(36) + "page: String) { visionHotRank(page: " + chr(36) + "page) { items { name hotValue iconUrl } } }"
         session = requests.Session()
         session.headers.update({**HEADERS, 'Referer': 'https://www.kuaishou.com/'})
-        resp = session.post(api_url, json=payload, timeout=TIMEOUT)
+        resp = session.post('https://www.kuaishou.com/graphql', json=payload, timeout=TIMEOUT)
         data = resp.json()
         items = data.get('data', {}).get('visionHotRank', {}).get('items', [])
         if items:
             results = []
             for i, item in enumerate(items[:10]):
                 results.append({'rank': i + 1, 'title': item.get('name', ''), 'hot': item.get('hotValue', 0)})
+            print("  [\u5feb\u624b] GraphQL\u6210\u529f")
             return results
     except Exception as e:
-        print(f"  [快手] 主接口失败: {e}")
+        print(f"  [\u5feb\u624b] GraphQL\u5931\u8d25: {e}")
+
+    # Try vvhan
     try:
-        url = 'https://api.vvhan.com/api/hotlist/kuaiShou'
-        resp = requests.get(url, timeout=TIMEOUT)
+        resp = requests.get('https://api.vvhan.com/api/hotlist/kuaiShou', headers=HEADERS, timeout=TIMEOUT)
         data = resp.json()
         items = data.get('data', [])
-        results = []
-        for i, item in enumerate(items[:10]):
-            results.append({'rank': i + 1, 'title': item.get('name', item.get('title', '')), 'hot': item.get('hot', item.get('hotValue', 0))})
-        return results if results else []
+        if items:
+            results = []
+            for i, item in enumerate(items[:10]):
+                results.append({'rank': i + 1, 'title': item.get('title', ''), 'hot': item.get('hot', 0)})
+            print("  [\u5feb\u624b] vvhan\u6210\u529f")
+            return results
     except Exception as e:
-        print(f"  [快手] 备用接口也失败: {e}")
-        return []
+        print(f"  [\u5feb\u624b] vvhan\u5931\u8d25: {e}")
 
+    # Try tenapi
+    try:
+        resp = requests.get('https://tenapi.cn/v2/kuaishouhot', headers=HEADERS, timeout=TIMEOUT)
+        data = resp.json()
+        items = data.get('data', [])
+        if items:
+            results = []
+            for i, item in enumerate(items[:10]):
+                results.append({'rank': i + 1, 'title': item.get('name', item.get('title', '')), 'hot': item.get('hot', item.get('hotValue', 0))})
+            print("  [\u5feb\u624b] tenapi\u6210\u529f")
+            return results
+    except Exception as e:
+        print(f"  [\u5feb\u624b] tenapi\u5931\u8d25: {e}")
+
+    # Try oioweb
+    try:
+        resp = requests.get('https://api.oioweb.cn/api/common/HotList?type=kuaishou', headers=HEADERS, timeout=TIMEOUT)
+        data = resp.json()
+        items = data.get('result', data.get('data', []))
+        if items:
+            results = []
+            for i, item in enumerate(items[:10]):
+                results.append({'rank': i + 1, 'title': item.get('title', ''), 'hot': item.get('hot', 0)})
+            print("  [\u5feb\u624b] oioweb\u6210\u529f")
+            return results
+    except Exception as e:
+        print(f"  [\u5feb\u624b] oioweb\u5931\u8d25: {e}")
+
+    print("  [\u5feb\u624b] \u6240\u6709\u63a5\u53e3\u5747\u5931\u8d25")
+    return []
 
 def fetch_toutiao():
     url = 'https://www.toutiao.com/hot-event/hot-board/?origin=toutiao_pc'
