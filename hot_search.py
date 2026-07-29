@@ -256,7 +256,8 @@ def send_wecom(content):
         "msgtype": "text",
         "text": {
             "content": content,
-            "mentioned_list": ["liyijie01", "hujianing"]
+            "mentioned_list": ["liyijie01", "hujianing"],
+            "mentioned_mobile_list": ["13810767926", "18794202126"]
         }
     }
     try:
