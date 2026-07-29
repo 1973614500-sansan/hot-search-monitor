@@ -256,7 +256,7 @@ def send_wecom(content):
         "msgtype": "text",
         "text": {
             "content": content,
-            "mentioned_list": ["liyijie01", "hujianing", "@all"]
+            "mentioned_list": ["liyijie01", "hujianing"]
         }
     }
     try:
