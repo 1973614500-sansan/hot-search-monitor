@@ -2,8 +2,8 @@ name: Hot Search Monitor
 
 on:
   schedule:
-    - cron: '0 * * * *'  # 每小时执行
-  workflow_dispatch:  # 支持手动触发
+    - cron: '0 * * * *'
+  workflow_dispatch:
   repository_dispatch:
     types: [hot-search-trigger]
 
@@ -12,15 +12,11 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-
-      - name: Set up Python
-        uses: actions/setup-python@v5
+      - uses: actions/setup-python@v5
         with:
           python-version: '3.11'
-
       - name: Install dependencies
         run: pip install -r requirements.txt
-
       - name: Run hot search monitor
         env:
           WECOM_WEBHOOK: ${{ secrets.WECOM_WEBHOOK }}
