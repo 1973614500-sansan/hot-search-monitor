@@ -28,11 +28,11 @@ TIMEOUT = 10
 
 STOP_WORDS = {
     '的', '了', '是', '在', '我', '有', '和', '就', '不', '人', '都', '一', '一个',
-    '上', '也', '很', '到', '说', '要', '去', '你', '会', '着', '没有', '看', '好',
-    '自己', '这', '他', '她', '它', '们', '那', '被', '从', '把', '让', '用', '为',
-    '什么', '怎么', '如何', '哪', '吗', '呢', '吧', '啊', '呀', '嘛', '还', '又',
-    '已经', '可以', '这个', '那个', '曝', '称', '回应', '发文', '表示', '官方',
-    '竟然', '居然', '终于', '原来', '其实', '真的', '直接', '突然', '疑似',
+    '上', '也', '而', '到', '说', '要', '去', '你', '会', '着', '没有', '看', '好',
+    '自己', '这', '他', '她', '本', '此', '它', '后', '前', '中', '很', '能', '为',
+    '什么', '怎么', '哪个', '那', '只', '其', '还', '让', '呀', '吧', '被', '比',
+    '已经', '因为', '当前', '那个', '从', '于', '应该', '可以', '表示', '官方',
+    '虽然', '当然', '可能', '原来', '其实', '大家', '直接', '突然', '近日',
 }
 
 
@@ -209,45 +209,45 @@ def format_hot(value):
 
 def build_message(all_data):
     now = datetime.now(BJT).strftime('%m-%d %H:%M')
-    lines = [f"\U0001f525 全网热搜播报 | {now}"]
+    lines = [f"🔥 全网热搜播报 | {now}"]
     platform_config = [
-        ('weibo', '\U0001f4f1 微博'),
-        ('douyin', '\U0001f3b5 抖音'),
-        ('bilibili', '\U0001f4fa B站'),
-        ('kuaishou', '\u26a1 快手'),
-        ('toutiao', '\U0001f4f0 头条'),
+        ('weibo', '📱 微博'),
+        ('douyin', '🎵 抖音'),
+        ('bilibili', '📺 B站'),
+        ('kuaishou', '⚡ 快手'),
+        ('toutiao', '📰 头条'),
     ]
     success_count = 0
     for platform, name in platform_config:
         data = all_data.get(platform, [])
         if data:
             success_count += 1
-            lines.append(f"\n{'─'*18}")
+            lines.append(f"\n{chr(9472)*18}")
             lines.append(f"{name} Top10")
             for item in data:
                 hot_str = format_hot(item['hot'])
-                hot_display = f" \U0001f525{hot_str}" if hot_str else ""
-                lines.append(f" {item['rank']:>2}. {item['title']}{hot_display}")
+                hot_display = f" 🔥{hot_str}" if hot_str else ""
+                lines.append(f"  {item['rank']:>2}. {item['title']}{hot_display}")
     hot_topics = detect_hot_topics(all_data)
     if hot_topics:
-        lines.append(f"\n{'═'*18}")
-        lines.append("\U0001f6a8 大热点提醒（\u22653个平台同时在榜）")
+        lines.append(f"\n{chr(9552)*18}")
+        lines.append("🚨 大热点提醒（≥3个平台同时在榜）")
         for topic in hot_topics[:5]:
-            plist = '\u3001'.join(topic['platforms'])
-            lines.append(f"  \U0001f534 「{topic['keyword']}」覆盖{topic['count']}个平台（{plist}）")
+            plist = '、'.join(topic['platforms'])
+            lines.append(f"  🔴 『{topic['keyword']}』覆盖{topic['count']}个平台（{plist}）")
     if success_count == 0:
-        lines.append("\n\u26a0\ufe0f 所有平台抓取失败")
+        lines.append("\n⚠️ 所有平台抓取失败")
     else:
-        lines.append(f"\n\u2705 成功获取 {success_count}/5 个平台")
-    return '\n'.join(lines)
+        lines.append(f"\n✅ 成功获取 {success_count}/5 个平台")
+    return "\n".join(lines)
 
 
 def send_wecom(content):
     if not WECOM_WEBHOOK:
-        print("[WARN] WECOM_WEBHOOK 未配置，跳过发送")
+        print('[WARN] WECOM_WEBHOOK 未配置，跳过发送')
         print("\n--- 消息预览 ---")
         print(content)
-        print("--- 结束 ---")
+        print('--- 结束 ---')
         return False
     webhook_url = WECOM_WEBHOOK
     if not webhook_url.startswith('http'):
@@ -263,7 +263,7 @@ def send_wecom(content):
         resp = requests.post(webhook_url, json=payload, timeout=10)
         result = resp.json()
         if result.get('errcode') == 0:
-            print("[OK] 企微发送成功")
+            print('[OK] 企微发送成功')
             return True
         else:
             print(f"[ERR] 企微发送失败: {result}")
@@ -296,7 +296,7 @@ def main():
         time.sleep(0.5)
     message = build_message(all_data)
     total = sum(len(v) for v in all_data.values())
-    print(f"\n总计获取 {total} 条热搜")
+    print(f"\n总计获取 {total} 条数据")
     hot_topics = detect_hot_topics(all_data)
     if hot_topics:
         print(f"检测到 {len(hot_topics)} 个大热点（>=3平台）")
@@ -305,7 +305,7 @@ def main():
     if total > 0:
         send_wecom(message)
     else:
-        print("[SKIP] 无数据，跳过发送")
+        print('[SKIP] 无数据，跳过发送')
         sys.exit(1)
 
 
