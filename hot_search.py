@@ -255,9 +255,7 @@ def send_wecom(content):
     payload = {
         "msgtype": "text",
         "text": {
-            "content": content + "
-
-@李圈圈 @福三三",
+            "content": content + "\n\n@李圈圈 @福三三",
             "mentioned_list": ["liyijie01", "hujianing"]
         }
     }
